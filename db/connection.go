@@ -10,8 +10,12 @@ import (
 
 var databaseConnection = ConnectDB()
 
+/*
+ConnectDB this function establishes the database connection
+*/
 func ConnectDB() *sql.DB {
 
+	//Loads the enrionment variables
 	config.LoadConfig()
 
 	dbHost := config.GetEnviromentVariable("DB_HOST")

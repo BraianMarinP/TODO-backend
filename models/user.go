@@ -1,8 +1,6 @@
 package models
 
-/*
-User is the struct that represents an user in the database
-*/
+// User is the struct that represents an user in the database.
 type User struct {
 	ID       int    `json:"id,omitempty"`
 	UserName string `json:"userName"`

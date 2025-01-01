@@ -16,6 +16,7 @@ import (
 func Router() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/users/sign-up", middlewares.CreateUser(handlers.CreateUser)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/users/login", handlers.Login).Methods("POST", "OPTIONS")
 	/*
 		router.HandleFunc("/api/createTask", middlewares.CreateTask(handlers.CreateTask)).Methods("POST", "OPTIONS")
 		router.HandleFunc("/api/getAllTasks", middlewares.GetAllTasks(handlers.GetAllTasks)).Methods("GET", "OPTIONS")
