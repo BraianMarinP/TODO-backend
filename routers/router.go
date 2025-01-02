@@ -13,6 +13,7 @@ import (
 	"github.com/rs/cors"
 )
 
+// Router sets up the HTTP server with specific routes for handling API requests.
 func Router() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/users/sign-up", middlewares.CreateUser(handlers.CreateUser)).Methods("POST", "OPTIONS")

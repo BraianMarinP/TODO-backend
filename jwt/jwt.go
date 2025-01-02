@@ -3,20 +3,22 @@ package jwt
 import (
 	"time"
 
+	"github.com/BraianMarinP/todo-backend/config"
 	"github.com/BraianMarinP/todo-backend/models"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
+// GeneratesJsonWebToken generates a JWT using the user's info.
 func GeneratesJsonWebToken(user models.User) (string, error) {
 	// Private password.
-	privatePassword := []byte("ThisIsAnExampleOf_A_PrivatePasssWordToCreateTheJsonWebToken")
+	privatePassword := []byte(config.GetEnviromentVariable("JWT_SIGNED_STRING"))
 	/*
 		Claims are pieces of information about an entity that
 		are included in the token.
 	*/
 	payload := jwt.MapClaims{
 		"id":       user.ID,
-		"userName": user.UserName,
+		"username": user.Username,
 		"email":    user.Email,
 		"exp":      time.Now().Add(time.Hour * 24).Unix(), // it returns the data in a long format
 	}
