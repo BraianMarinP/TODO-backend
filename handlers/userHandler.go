@@ -124,7 +124,7 @@ func validatePassword(password string) (bool, error) {
 func Login(w http.ResponseWriter, r *http.Request) {
 
 	// Indicate that the response body will be in JSON format.
-	w.Header().Set("Context-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	// Control the timeout of the operation.
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
