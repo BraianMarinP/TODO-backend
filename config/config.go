@@ -16,8 +16,8 @@ func LoadConfig() {
 	}
 }
 
-// GetEnviromentVariable this function loads an especific environment variable.
-func GetEnviromentVariable(key string) string {
+// GetEnvironmentVariable this function loads an specific environment variable.
+func GetEnvironmentVariable(key string) string {
 	value, exists := os.LookupEnv(key)
 	// Checks if the environment variable exists.
 	if !exists {

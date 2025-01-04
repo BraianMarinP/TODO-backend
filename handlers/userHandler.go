@@ -43,7 +43,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if the user doesn't exist to allow it to be created.
-	exists, err := db.CheckUserExistsByUsername(ctx, user.Username)
+	exists, err := db.CheckUserExistsByUserName(ctx, user.UserName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -65,11 +65,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	// Record the user in the database.
 	ID, err := db.CreateUser(ctx, user)
 	if err != nil {
-		http.Error(w, "An error has ocurred while trying to register the user. "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "An error has occurred while trying to register the user. "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// If the returned ID equals 0, an error has been ocurred while recording.
+	// If the returned ID equals 0, an error has been occurred while recording.
 	if ID == 0 {
 		http.Error(w, "The user registration has not been completed.", http.StatusInternalServerError)
 		return
@@ -129,7 +129,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	var userCredentials models.Credentials
+	var userCredentials models.UserCredentials
 
 	// Fetch the credentials.
 	err := json.NewDecoder(r.Body).Decode(&userCredentials)
@@ -143,15 +143,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Perform a login attempt.
 	user, authenticated, err = db.AttemptLogin(ctx, userCredentials.User, userCredentials.Password)
 	if err != nil {
-		// If authenticated is false, the password is incorrect.
-		if !authenticated {
-			http.Error(w, "Incorrect password.", http.StatusUnauthorized)
-			return
-		} else {
-			// If the user is authenticated, it was an internal server error.
-			http.Error(w, "An error has ocurred: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
+		http.Error(w, "An error has occurred: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// If authenticated is false, the password is incorrect.
+	if !authenticated {
+		http.Error(w, "Incorrect password.", http.StatusUnauthorized)
+		return
 	}
 
 	// Generate the token.

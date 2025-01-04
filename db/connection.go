@@ -18,11 +18,11 @@ func ConnectDB() *sql.DB {
 	//Loads the enrionment variables
 	config.LoadConfig()
 
-	dbHost := config.GetEnviromentVariable("DB_HOST")
-	dbPort := config.GetEnviromentVariable("DB_PORT")
-	dbUser := config.GetEnviromentVariable("DB_USER")
-	dbPassword := config.GetEnviromentVariable("DB_PASSWORD")
-	dbSchema := config.GetEnviromentVariable("DB_SCHEMA")
+	dbHost := config.GetEnvironmentVariable("DB_HOST")
+	dbPort := config.GetEnvironmentVariable("DB_PORT")
+	dbUser := config.GetEnvironmentVariable("DB_USER")
+	dbPassword := config.GetEnvironmentVariable("DB_PASSWORD")
+	dbSchema := config.GetEnvironmentVariable("DB_SCHEMA")
 
 	// Perfom a connection to the database 'USER:PASSWORD@tcp(HOST:PORT)/SCHEMA'
 	connectionString := dbUser + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbSchema

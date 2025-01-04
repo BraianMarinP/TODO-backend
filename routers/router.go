@@ -18,6 +18,7 @@ func Router() {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/users/sign-up", middlewares.CreateUser(handlers.CreateUser)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/users/login", handlers.Login).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/task/create", middlewares.ValidateJWT(handlers.CreateTask)).Methods("POST", "OPTIONS")
 	/*
 		router.HandleFunc("/api/createTask", middlewares.CreateTask(handlers.CreateTask)).Methods("POST", "OPTIONS")
 		router.HandleFunc("/api/getAllTasks", middlewares.GetAllTasks(handlers.GetAllTasks)).Methods("GET", "OPTIONS")
@@ -30,7 +31,7 @@ func Router() {
 	handler := cors.AllowAll().Handler(router)
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
-		PORT = config.GetEnviromentVariable("SERVER_PORT")
+		PORT = config.GetEnvironmentVariable("SERVER_PORT")
 	}
 	fmt.Println("Starting the server on port " + PORT + "...")
 	log.Fatal(http.ListenAndServe(":"+PORT, handler))

@@ -11,14 +11,14 @@ import (
 // GeneratesJsonWebToken generates a JWT using the user's info.
 func GeneratesJsonWebToken(user models.User) (string, error) {
 	// Private password.
-	privatePassword := []byte(config.GetEnviromentVariable("JWT_SIGNED_STRING"))
+	privatePassword := []byte(config.GetEnvironmentVariable("JWT_SIGNED_STRING"))
 	/*
 		Claims are pieces of information about an entity that
 		are included in the token.
 	*/
 	payload := jwt.MapClaims{
 		"id":       user.ID,
-		"username": user.Username,
+		"userName": user.UserName,
 		"email":    user.Email,
 		"exp":      time.Now().Add(time.Hour * 24).Unix(), // it returns the data in a long format
 	}
