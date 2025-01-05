@@ -85,6 +85,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Couldn't delete the task. Task not found.", http.StatusBadRequest)
 		return
 	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Task successfully deleted."))
 }
@@ -120,7 +121,41 @@ func UndoTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Task successfully updated."))
+	w.Write([]byte("Task successfully undone."))
+}
+
+// CompleteTask sets the state of a task to completed.
+func CompleteTask(w http.ResponseWriter, r *http.Request) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	w.Header().Set("Access-Control-Allow-Header", "Content-Type")
+
+	// Fetch the task data.
+	var task models.Task
+	err := json.NewDecoder(r.Body).Decode(&task)
+	if err != nil {
+		http.Error(w, "Error in the received data.", http.StatusBadRequest)
+		return
+	}
+
+	var updated bool
+	updated, err = db.CompleteTask(ctx, task.ID, UserID)
+	if err != nil {
+		http.Error(w, "Error while trying to undo the task: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !updated {
+		http.Error(w, "Couldn't complete the task. Task not found.", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Task successfully completed."))
 }
 
 // GetAllTasks this function retrieves all tasks of a user from the database
@@ -129,14 +164,6 @@ func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	// payload := getAllTasks()
 	// json.NewEncoder(w).Encode(payload)
-}
-
-// CompleteTask sets the state of a task to completed.
-func CompleteTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT")
-	w.Header().Set("Access-Control-Allow-Header", "Content-Type")
 }
 
 // DeleteAllTasks deletes all user task records from the database.
