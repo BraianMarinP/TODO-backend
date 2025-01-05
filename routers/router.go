@@ -16,10 +16,11 @@ import (
 // Router sets up the HTTP server with specific routes for handling API requests.
 func Router() {
 	router := mux.NewRouter()
-	router.HandleFunc("/api/users/sign-up", middlewares.CreateUser(handlers.CreateUser)).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/users/sign-up", handlers.CreateUser).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/users/login", handlers.Login).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/task/create", middlewares.ValidateJWT(handlers.CreateTask)).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/task/delete", middlewares.ValidateJWT(handlers.DeleteTask)).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/api/task/undo", middlewares.ValidateJWT(handlers.UndoTask)).Methods("PUT", "OPTIONS")
 	/*
 		router.HandleFunc("/api/getAllTasks", middlewares.GetAllTasks(handlers.GetAllTasks)).Methods("GET", "OPTIONS")
 		router.HandleFunc("/api/completeTask", middlewares.CompleteTask(handlers.CompleteTask)).Methods("PUT", "OPTIONS")

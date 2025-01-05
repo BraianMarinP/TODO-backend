@@ -30,7 +30,8 @@ func CreateTask(ctx context.Context, task models.Task) (bool, error) {
 }
 
 func DeleteTask(ctx context.Context, taskID int, userID int) (bool, error) {
-	// Creates the query.
+	// Creates a SQL statement with the provided context
+	// and query for deleting a task.
 	query := "DELETE FROM task WHERE id = ? and user_id = ?"
 	preparedStatement, err := databaseConnection.PrepareContext(ctx, query)
 	if err != nil {
@@ -39,6 +40,38 @@ func DeleteTask(ctx context.Context, taskID int, userID int) (bool, error) {
 	defer preparedStatement.Close()
 
 	// Executes the prepared statement.
+	var result sql.Result
+	result, err = preparedStatement.ExecContext(ctx, taskID, userID)
+	if err != nil {
+		return false, fmt.Errorf("failed to execute prepared delete statement: %w", err)
+	}
+
+	// Check if any rows were affected.
+	var rowsAffected int64
+	rowsAffected, err = result.RowsAffected()
+	if err != nil {
+		return false, fmt.Errorf("error while fetching rows affected: %w", err)
+	}
+
+	// No rows were deleted.
+	if rowsAffected == 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func UndoTask(ctx context.Context, taskID int, userID int) (bool, error) {
+
+	// Create a SQL statement with the provided context
+	// and query for undoing a task.
+	query := "UPDATE task SET state = false WHERE id = ? and user_id = ?"
+	preparedStatement, err := databaseConnection.PrepareContext(ctx, query)
+	if err != nil {
+		return false, fmt.Errorf("failed to prepare query: %w", err)
+	}
+
+	// Execute the prepared statement.
 	var result sql.Result
 	result, err = preparedStatement.ExecContext(ctx, taskID, userID)
 	if err != nil {
