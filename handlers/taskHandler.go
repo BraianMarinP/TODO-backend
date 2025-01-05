@@ -55,6 +55,38 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// DeleteTask deletes a record task from the database.
+func DeleteTask(w http.ResponseWriter, r *http.Request) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
+	w.Header().Set("Access-Control-Allow-Header", "Content-Type")
+
+	// Fetch the task info to delete.
+	var task models.Task
+	err := json.NewDecoder(r.Body).Decode(&task)
+	if err != nil {
+		http.Error(w, "Error in the received data: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var deleted bool
+	deleted, err = db.DeleteTask(ctx, task.ID, UserID)
+	if err != nil {
+		http.Error(w, "Error while trying to delete the task: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !deleted {
+		http.Error(w, "Couldn't delete the task.", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 // GetAllTasks this function retrieves all tasks of a user from the database
 func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
@@ -80,14 +112,6 @@ func UndoTask(w http.ResponseWriter, r *http.Request) {
 
 	//taskID := r.PathValue("id")
 
-}
-
-// DeleteTask deletes a record task from the database.
-func DeleteTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "DELETE")
-	w.Header().Set("Access-Control-Allow-Header", "Content-Type")
 }
 
 // DeleteAllTasks deletes all user task records from the database.
