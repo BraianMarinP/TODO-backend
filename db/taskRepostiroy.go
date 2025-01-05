@@ -119,3 +119,21 @@ func detectRowsAffected(result sql.Result) (bool, error) {
 
 	return true, nil
 }
+
+func DeleteAllTasks(ctx context.Context, userID int) (bool, error) {
+	// Create a SQL statement with the provided context
+	// and query for undoing a task.
+	query := "DELETE FROM task WHERE user_id = ?"
+	preparedStatement, err := databaseConnection.PrepareContext(ctx, query)
+	if err != nil {
+		return false, fmt.Errorf("failed to prepare query: %w", err)
+	}
+
+	// Execute the prepared statement.
+	var result sql.Result
+	result, err = preparedStatement.ExecContext(ctx, userID)
+	if err != nil {
+		return false, fmt.Errorf("failed to execute prepared delete statement: %w", err)
+	}
+	return detectRowsAffected(result)
+}

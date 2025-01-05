@@ -139,7 +139,7 @@ func CompleteTask(w http.ResponseWriter, r *http.Request) {
 	var task models.Task
 	err := json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
-		http.Error(w, "Error in the received data.", http.StatusBadRequest)
+		http.Error(w, "Error in the received data."+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -158,15 +158,29 @@ func CompleteTask(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Task successfully completed."))
 }
 
+// DeleteAllTasks deletes all user task records from the database.
+func DeleteAllTasks(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	deleted, err := db.DeleteAllTasks(ctx, UserID)
+	if err != nil {
+		http.Error(w, "Error while trying to delete all the tasks: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !deleted {
+		http.Error(w, "Couldn't delete all the tasks. No tasks not found.", http.StatusBadRequest)
+		return
+	}
+}
+
 // GetAllTasks this function retrieves all tasks of a user from the database
 func GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	// payload := getAllTasks()
 	// json.NewEncoder(w).Encode(payload)
-}
-
-// DeleteAllTasks deletes all user task records from the database.
-func DeleteAllTasks(w http.ResponseWriter, r *http.Request) {
-
 }

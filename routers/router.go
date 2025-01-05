@@ -22,11 +22,9 @@ func Router() {
 	router.HandleFunc("/api/task/delete", middlewares.ValidateJWT(handlers.DeleteTask)).Methods("DELETE", "OPTIONS")
 	router.HandleFunc("/api/task/complete", middlewares.ValidateJWT(handlers.CompleteTask)).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/api/task/undo", middlewares.ValidateJWT(handlers.UndoTask)).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/api/task/deleteAllTasks", middlewares.ValidateJWT(handlers.DeleteAllTasks)).Methods("DELETE", "OPTIONS")
 	/*
 		router.HandleFunc("/api/getAllTasks", middlewares.GetAllTasks(handlers.GetAllTasks)).Methods("GET", "OPTIONS")
-		router.HandleFunc("/api/completeTask", middlewares.CompleteTask(handlers.CompleteTask)).Methods("PUT", "OPTIONS")
-		router.HandleFunc("/api/deleteTask", middlewares.DeleteTask(handlers.DeleteTask)).Methods("DELETE", "OPTIONS")
-		router.HandleFunc("/api/deleteAllTask", middlewares.DeleteAllTask(handlers.DeleteAllTask)).Methods("DELETE", "OPTIONS")
 	*/
 	// Grant permissions to everyone to allow access without problems
 	handler := cors.AllowAll().Handler(router)
