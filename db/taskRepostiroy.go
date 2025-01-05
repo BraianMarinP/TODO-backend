@@ -104,6 +104,28 @@ func CompleteTask(ctx context.Context, taskID int, userID int) (bool, error) {
 	return detectRowsAffected(result)
 }
 
+// UpdateTask updates a user's task content.
+func UpdateTask(ctx context.Context, task models.Task, userID int) (bool, error) {
+
+	// Create a SQL statement with the provided context
+	// and query for undoing a task.
+	query := "UPDATE task SET tittle = ?, description = ? WHERE id = ? and user_id = ?"
+	preparedStatement, err := databaseConnection.PrepareContext(ctx, query)
+	if err != nil {
+		return false, fmt.Errorf("failed to prepare query: %w", err)
+	}
+	defer preparedStatement.Close()
+
+	// Execute the prepared statement.
+	var result sql.Result
+	result, err = preparedStatement.ExecContext(ctx, task.Title, task.Description, task.ID, userID)
+	if err != nil {
+		return false, fmt.Errorf("failed to execute prepared delete statement: %w", err)
+	}
+
+	return detectRowsAffected(result)
+}
+
 // detectRowsAffected detects if the updates were successfully performed.
 func detectRowsAffected(result sql.Result) (bool, error) {
 	// Check if any rows were affected.

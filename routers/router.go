@@ -23,6 +23,7 @@ func Router() {
 	router.HandleFunc("/api/task/complete", middlewares.ValidateJWT(handlers.CompleteTask)).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/api/task/undo", middlewares.ValidateJWT(handlers.UndoTask)).Methods("PUT", "OPTIONS")
 	router.HandleFunc("/api/task/deleteAllTasks", middlewares.ValidateJWT(handlers.DeleteAllTasks)).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/api/task/update", middlewares.ValidateJWT(handlers.UpdateTask)).Methods("PUT", "OPTIONS")
 	/*
 		router.HandleFunc("/api/getAllTasks", middlewares.GetAllTasks(handlers.GetAllTasks)).Methods("GET", "OPTIONS")
 	*/

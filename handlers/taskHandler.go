@@ -158,6 +158,40 @@ func CompleteTask(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Task successfully completed."))
 }
 
+// UpdateTask updates a user's task content.
+func UpdateTask(w http.ResponseWriter, r *http.Request) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	w.Header().Set("Access-Control-Allow-Header", "Content-Type")
+
+	// Fetch the task data.
+	var task models.Task
+	err := json.NewDecoder(r.Body).Decode(&task)
+	if err != nil {
+		http.Error(w, "Error in the received data."+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var updated bool
+	updated, err = db.UpdateTask(ctx, task, UserID)
+	if err != nil {
+		http.Error(w, "Error while trying to undo the task: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if !updated {
+		http.Error(w, "Couldn't update the task. Task not found.", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Task successfully updated."))
+}
+
 // DeleteAllTasks deletes all user task records from the database.
 func DeleteAllTasks(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
